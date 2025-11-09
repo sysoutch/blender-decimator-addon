@@ -27,17 +27,18 @@ The Decimator addon provides an efficient way to reduce mesh complexity by decim
 ## 📖 How to Use
 
 1. Select a mesh object in Edit mode
-2. Open the **Edit** tab in the 3D Viewport sidebar
+2. Open the **Edit** tab in the 3D Viewport sidebar then click **Decimator**
 3. Set your desired **Target Face Count**
-4. Click **Merge Vertices** to clean up the mesh
-5. Click **Decimate** to reduce the polygon count
+4. Click **Decimate** to reduce the polygon count
+5. Click **Merge Vertices** to clean up the mesh if needed
+6. Click **Apply Modifier** to apply the Decimate modifier
 
 ![decimator_screen](screenshots/decimator_screen2.png)
 
 ## ⚙️ Workflow
 
-1. **Merge Vertices** → Removes duplicate/very close vertices
-2. **Decimate to Target** → Reduces face count to specified amount
+1. **Decimate to Target** → Reduces face count to specified amount
+2. **Merge Vertices** → Removes duplicate/very close vertices
 3. **Apply Modifier** → Finalizes the decimation (if needed)
 
 ## 📊 Settings
