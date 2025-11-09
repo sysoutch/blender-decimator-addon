@@ -9,7 +9,7 @@ bl_info = {
 }
 
 import bpy
-from bpy.props import IntProperty
+from bpy.props import IntProperty, BoolProperty
 from bpy.types import Panel, Operator
 
 class OBJECT_OT_decimate_to_target(Operator):
@@ -75,6 +75,27 @@ class OBJECT_OT_merge_vertices(Operator):
         self.report({'INFO'}, "Vertices merged successfully")
         return {'FINISHED'}
 
+class OBJECT_OT_apply_decimate_modifier(Operator):
+    bl_idname = "object.apply_decimate_modifier"
+    bl_label = "Apply Modifier"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        obj = context.active_object
+        if not obj or obj.type != 'MESH':
+            self.report({'ERROR'}, "Active object must be a mesh")
+            return {'CANCELLED'}
+        
+        # Find and apply the decimate modifier
+        for mod in obj.modifiers:
+            if mod.type == 'DECIMATE' and mod.name == "Decimate":
+                bpy.ops.object.modifier_apply(modifier=mod.name)
+                self.report({'INFO'}, "Decimate modifier applied")
+                return {'FINISHED'}
+        
+        self.report({'INFO'}, "No Decimate modifier found")
+        return {'CANCELLED'}
+
 class VIEW3D_PT_decimator_panel(Panel):
     bl_label = "Decimator"
     bl_idname = "VIEW3D_PT_decimator_panel"
@@ -88,11 +109,24 @@ class VIEW3D_PT_decimator_panel(Panel):
 
         layout.prop(scene, "decimate_target_face_count")
         layout.operator("object.decimate_to_target", text="Decimate")
-        layout.operator("object.merge_vertices", text="Merge Vertices")
+        
+        # Check if decimate modifier exists and show warning
+        obj = context.active_object
+        if obj and obj.type == 'MESH':
+            has_decimate_mod = any(mod.type == 'DECIMATE' and mod.name == "Decimate" for mod in obj.modifiers)
+            if has_decimate_mod:
+                box = layout.box()
+                box.label(text="Model looks off?", icon='QUESTION')
+                box.operator("object.merge_vertices", text="Merge Vertices", icon='MOD_VERTEX_WEIGHT')
+
+                box = layout.box()
+                box.label(text="Modifier not applied yet", icon='ERROR')
+                box.operator("object.apply_decimate_modifier", text="Apply Modifier", icon='FILE_TICK')
 
 def register():
     bpy.utils.register_class(OBJECT_OT_decimate_to_target)
     bpy.utils.register_class(OBJECT_OT_merge_vertices)
+    bpy.utils.register_class(OBJECT_OT_apply_decimate_modifier)
     bpy.utils.register_class(VIEW3D_PT_decimator_panel)
     bpy.types.Scene.decimate_target_face_count = IntProperty(
         name="Target Face Count",
@@ -104,6 +138,7 @@ def register():
 def unregister():
     bpy.utils.unregister_class(OBJECT_OT_decimate_to_target)
     bpy.utils.unregister_class(OBJECT_OT_merge_vertices)
+    bpy.utils.unregister_class(OBJECT_OT_apply_decimate_modifier)
     bpy.utils.unregister_class(VIEW3D_PT_decimator_panel)
     del bpy.types.Scene.decimate_target_face_count
 

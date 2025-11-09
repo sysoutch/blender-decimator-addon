@@ -32,6 +32,8 @@ The Decimator addon provides an efficient way to reduce mesh complexity by decim
 4. Click **Merge Vertices** to clean up the mesh
 5. Click **Decimate** to reduce the polygon count
 
+![decimator_screen](screenshots/decimator_screen2.png)
+
 ## ⚙️ Workflow
 
 1. **Merge Vertices** → Removes duplicate/very close vertices
